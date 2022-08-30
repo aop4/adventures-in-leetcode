@@ -1,6 +1,9 @@
 plugins {
     id 'java'
+    id 'pmd'
 }
+
+build.dependsOn check
 
 group 'com.andrewpuglionesi'
 version '1.0-SNAPSHOT'
