@@ -1,9 +1,14 @@
 plugins {
     id 'java'
     id 'pmd'
+    id 'jacoco'
 }
 
-build.dependsOn check
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
 
 group 'com.andrewpuglionesi'
 version '1.0-SNAPSHOT'
@@ -12,11 +17,23 @@ repositories {
     mavenCentral()
 }
 
+build.dependsOn check
+
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
+jacocoTestReport {
+    doLast {
+        project.logger.quiet("\nTests complete. View jacoco report at "
+                + buildDir + "/reports/jacoco/test/html/index.html")
+    }
+}
+
 test {
     useJUnitPlatform()
+    finalizedBy {
+        jacocoTestReport
+    }
 }
