@@ -1,5 +1,6 @@
 package com.andrewpuglionesi.datastructures;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -9,11 +10,20 @@ import java.util.Objects;
  * @param <K> data type of keys in the counter.
  */
 @SuppressWarnings("PMD.BeanMembersShouldSerialize")
-public class Counter<K> {
+public final class Counter<K> {
     private final HashMap<K, Long> counterMap;
 
     public Counter() {
         this.counterMap = new HashMap<>();
+    }
+
+    public Counter(Collection<K> collection) {
+        this();
+        if (collection != null) {
+            for (K key : collection) {
+                this.increment(key);
+            }
+        }
     }
 
     /**

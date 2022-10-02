@@ -3,8 +3,10 @@ package com.andrewpuglionesi.datastructures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +20,27 @@ public class CounterTest {
     @BeforeEach
     void setup() {
         this.counter = new Counter<>();
+    }
+
+    @Test
+    void constructorEmptyList() {
+        Counter<Integer> counter = new Counter<>(Collections.emptyList());
+        assertEquals(0, counter.size());
+    }
+
+    @Test
+    void constructorNullCollection() {
+        Counter<Integer> counter = new Counter<>(null);
+        assertEquals(0, counter.size());
+    }
+
+    @Test
+    void constructorPopulatedList() {
+        Counter<Integer> counter = new Counter<>(List.of(1, 2, 2, 3));
+        assertEquals(3, counter.size());
+        assertEquals(1, counter.get(1));
+        assertEquals(2, counter.get(2));
+        assertEquals(1, counter.get(3));
     }
 
     @Test
