@@ -1,5 +1,8 @@
 package com.andrewpuglionesi.leetcode.solvetheequation;
 
+/**
+ * Solves simple polynomial equations of the form Ax+b=Cx+d, where A, b, C, and d are integers.
+ */
 public class EquationSolver {
     /**
      * Indicates that an equation has no solution.
@@ -27,8 +30,8 @@ public class EquationSolver {
      * See {@link FirstOrderPolynomial#buildFromString(String, String)} for  more information on valid formatting.
      */
     @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-    public String solveFirstOrderPolynomialEquation(String equation, String variableName) {
-        String[] bothSides = equation.split("=");
+    public String solveFirstOrderPolynomialEquation(final String equation, final String variableName) {
+        final String[] bothSides = equation.split("=");
         if (bothSides.length != 2) {
             throw new IllegalArgumentException("Equation must have exactly one equals sign.");
         }

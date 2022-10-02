@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public class PermutationCheckerTest {
 
     private final PermutationChecker permutationChecker = new PermutationChecker();

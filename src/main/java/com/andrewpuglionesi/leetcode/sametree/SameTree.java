@@ -24,21 +24,21 @@ public class SameTree {
     }
 
     /**
-     * Determines whether two subtrees, with roots {@code a} and {@code b}, are equivalent.
-     * @param a the root of a subtree.
-     * @param b the root of another subtree.
+     * Determines whether two subtrees, with roots {@code node1} and {@code node2}, are equivalent.
+     * @param node1 the root of node1 subtree.
+     * @param node2 the root of another subtree.
      * @return true if the subtrees are equivalent, false otherwise.
-     * @param <T>  data type of the nodes' values in each subtree.
+     * @param <T> data type of the nodes' values in each subtree.
      */
-    private <T> boolean areSubTreesEqual(final Node<T> a, final Node<T> b) {
-        if (a == null && b == null) {
+    private <T> boolean areSubTreesEqual(final Node<T> node1, final Node<T> node2) {
+        if (node1 == null && node2 == null) {
             return true;
         }
-        if (a == null || b == null) {
+        if (node1 == null || node2 == null) {
             return false;
         }
-        return a.getValue().equals(b.getValue())
-                && this.areSubTreesEqual(a.getLeft(), b.getLeft())
-                && this.areSubTreesEqual(a.getRight(), b.getRight());
+        return node1.getValue().equals(node2.getValue())
+                && this.areSubTreesEqual(node1.getLeft(), node2.getLeft())
+                && this.areSubTreesEqual(node1.getRight(), node2.getRight());
     }
 }

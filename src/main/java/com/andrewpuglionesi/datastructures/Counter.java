@@ -2,6 +2,7 @@ package com.andrewpuglionesi.datastructures;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -9,18 +10,25 @@ import java.util.Objects;
  * (stored as a {@link Long}).
  * @param <K> data type of keys in the counter.
  */
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public final class Counter<K> {
-    private final HashMap<K, Long> counterMap;
+    private final Map<K, Long> counterMap;
 
+    /**
+     * Constructor that creates an empty Counter.
+     */
     public Counter() {
         this.counterMap = new HashMap<>();
     }
 
-    public Counter(Collection<K> collection) {
+    /**
+     * Constructor that builds a Counter from a Collection. The resulting Counter will count the frequency of each item
+     * in the collection.
+     * @param collection a Collection.
+     */
+    public Counter(final Collection<K> collection) {
         this();
         if (collection != null) {
-            for (K key : collection) {
+            for (final K key : collection) {
                 this.increment(key);
             }
         }
@@ -31,7 +39,7 @@ public final class Counter<K> {
      * adds it and sets its value to 1.
      * @param key the key whose value to increment.
      */
-    public void increment(K key) {
+    public void increment(final K key) {
         this.counterMap.put(key, this.counterMap.getOrDefault(key, 0L) + 1);
     }
 
@@ -40,7 +48,7 @@ public final class Counter<K> {
      * a value less than 2, removes it from the counter.
      * @param key the character whose value to decrement.
      */
-    public void decrement(K key) {
+    public void decrement(final K key) {
         if (this.counterMap.get(key) == null) {
             return;
         }
@@ -55,7 +63,7 @@ public final class Counter<K> {
      * @param key K a potential key in the map.
      * @return the value for the key, or else null if it isn't present.
      */
-    public Long get(K key) {
+    public Long get(final K key) {
         return this.counterMap.get(key);
     }
 
@@ -72,14 +80,14 @@ public final class Counter<K> {
      * in both Counters.
      */
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(final Object other) {
         if (other == null) {
             return false;
         }
         if (!(other instanceof Counter)) {
             return false;
         }
-        HashMap otherMap = ((Counter) other).counterMap;
+        final Map otherMap = ((Counter) other).counterMap;
         return Objects.equals(this.counterMap, otherMap);
     }
 

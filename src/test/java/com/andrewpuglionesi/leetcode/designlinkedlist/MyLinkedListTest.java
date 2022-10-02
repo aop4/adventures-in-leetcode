@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public class MyLinkedListTest {
     private MyLinkedList<Integer> linkedList;
 

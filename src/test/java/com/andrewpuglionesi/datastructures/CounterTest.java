@@ -10,7 +10,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public class CounterTest {
     private Counter<String> counter;
     
@@ -142,7 +141,6 @@ public class CounterTest {
     }
 
     @Test
-    @SuppressWarnings("PMD.EqualsNull")
     void equalsWithNullArgument() {
         assertFalse(this.counter.equals(null));
     }

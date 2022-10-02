@@ -3,8 +3,13 @@ package com.andrewpuglionesi.leetcode.validatebinarysearchtree;
 import com.andrewpuglionesi.datastructures.BinaryTree;
 import lombok.NonNull;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+/**
+ * A service that determines whether a {@link BinaryTree} is a valid binary search tree.
+ */
 public class ValidateBinarySearchTree {
+
+    private static final SubTreeStats INVALID_SUBTREE = new SubTreeStats(false);
+
     /**
      * Represents statistics describing a subtree of a {@link BinaryTree}.
      */
@@ -21,20 +26,24 @@ public class ValidateBinarySearchTree {
          * Whether the subtree is a valid binary search tree (i.e., for every node, its left subtree contains values
          * strictly less than it, and its right subtree contains values strictly greater than it.)
          */
-        private boolean isValidSubtree;
+        private final boolean isValidSubtree;
 
-        public SubTreeStats(boolean isValidSubtree) {
+        /**
+         * Constructor.
+         */
+        public SubTreeStats(final boolean isValidSubtree) {
             this.isValidSubtree = isValidSubtree;
         }
 
-        public SubTreeStats(int min, int max, boolean isValidSubtree) {
+        /**
+         * Constructor.
+         */
+        public SubTreeStats(final int min, final int max, final boolean isValidSubtree) {
             this.min = min;
             this.max = max;
             this.isValidSubtree = isValidSubtree;
         }
     }
-
-    private static final SubTreeStats INVALID_SUBTREE = new SubTreeStats(false);
 
     /**
      * Checks whether {@code tree} is a valid binary search tree.
@@ -44,12 +53,11 @@ public class ValidateBinarySearchTree {
      * than it. Returns false if this is not the case for any subtree of {@code tree} or if any node in the tree has a
      * null {@code value}.
      */
-    public boolean isValidBst(@NonNull BinaryTree<Integer> tree) {
+    public boolean isValidBst(@NonNull final BinaryTree<Integer> tree) {
         if (tree.getRoot() == null) {
             return true;
         }
-        SubTreeStats stats = this.collectSubTreeStats(tree.getRoot());
-        return stats.isValidSubtree;
+        return this.collectSubTreeStats(tree.getRoot()).isValidSubtree;
     }
 
     /**
@@ -58,32 +66,31 @@ public class ValidateBinarySearchTree {
      * (a {@link SubTreeStats} with isValidSubtree == false) will be returned. The min and max values in the returned
      * object will not be reliable if isValidSubtree is false.
      */
-    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
-    private SubTreeStats collectSubTreeStats(BinaryTree.Node<Integer> curr) {
+    private SubTreeStats collectSubTreeStats(final BinaryTree.Node<Integer> curr) {
+        if (curr == null) {
+            return null;
+        }
         // disqualify tree if any node has a null value attribute
         if (curr.getValue() == null) {
             return INVALID_SUBTREE;
         }
 
-        SubTreeStats leftSubTreeStats = null;
-        if (curr.getLeft() != null) {
-            leftSubTreeStats = this.collectSubTreeStats(curr.getLeft());
-            if (!leftSubTreeStats.isValidSubtree || leftSubTreeStats.max >= curr.getValue()) {
-                return INVALID_SUBTREE;
-            }
-        }
+        final SubTreeStats leftSubTreeStats = this.collectSubTreeStats(curr.getLeft());
+        final SubTreeStats rightSubTreeStats = this.collectSubTreeStats(curr.getRight());
 
-        SubTreeStats rightSubTreeStats = null;
-        if (curr.getRight() != null) {
-            rightSubTreeStats = this.collectSubTreeStats(curr.getRight());
-            if (!rightSubTreeStats.isValidSubtree || rightSubTreeStats.min <= curr.getValue()) {
-                return INVALID_SUBTREE;
-            }
-        }
+        return this.buildSubTreeStats(curr, leftSubTreeStats, rightSubTreeStats);
+    }
 
+    private SubTreeStats buildSubTreeStats(final BinaryTree.Node<Integer> root, final SubTreeStats leftSubTreeStats, final SubTreeStats rightSubTreeStats) {
+        if (leftSubTreeStats != null && (!leftSubTreeStats.isValidSubtree || leftSubTreeStats.max >= root.getValue())) {
+            return INVALID_SUBTREE;
+        }
+        if (rightSubTreeStats != null && (!rightSubTreeStats.isValidSubtree || rightSubTreeStats.min <= root.getValue())) {
+            return INVALID_SUBTREE;
+        }
         return new SubTreeStats(
-                leftSubTreeStats != null ? leftSubTreeStats.min : curr.getValue(),
-                rightSubTreeStats != null ? rightSubTreeStats.max : curr.getValue(),
+                leftSubTreeStats == null ? root.getValue() : leftSubTreeStats.min,
+                rightSubTreeStats == null ? root.getValue() : rightSubTreeStats.max,
                 true
         );
     }

@@ -41,3 +41,8 @@ test {
         jacocoTestReport
     }
 }
+
+pmd {
+    ruleSets = []
+    ruleSetFiles(files("config/pmd/customruleset.xml"))
+}

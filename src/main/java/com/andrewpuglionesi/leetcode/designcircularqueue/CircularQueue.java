@@ -6,7 +6,6 @@ import java.util.Optional;
 /**
  * An implementation of a circular queue with fixed capacity and memory allocation.
  */
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public class CircularQueue<T> {
 
     private final T[] queue;
@@ -33,7 +32,7 @@ public class CircularQueue<T> {
      * @param capacity the maximum number of items that may be stored in the queue.
      * @throws IllegalArgumentException if capacity is not a positive integer.
      */
-    public CircularQueue(int capacity) {
+    public CircularQueue(final int capacity) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("CircularQueue capacity must be a positive integer.");
         }
@@ -49,7 +48,7 @@ public class CircularQueue<T> {
      * @param value the item to add.
      * @return true if the operation is successful, false otherwise (e.g., if the queue is already full).
      */
-    public boolean enqueue(T value) {
+    public boolean enqueue(final T value) {
         if (this.isFull()) {
             return false;
         }
@@ -93,7 +92,7 @@ public class CircularQueue<T> {
         if (this.isEmpty()) {
             return Optional.empty();
         }
-        int rearIndex = (this.queue.length + this.end - 1) % this.queue.length; // the tail is the item before "end"
+        final int rearIndex = (this.queue.length + this.end - 1) % this.queue.length; // the tail is the item before "end"
         return Optional.of(this.queue[rearIndex]);
     }
 
@@ -126,9 +125,9 @@ public class CircularQueue<T> {
     }
 
     /**
-     * @return the index after {@code i} in the q. If i is the last index in the queue, will return 0.
+     * @return the index after {@code index} in the q. If {@code index} is the last index in the queue, will return 0.
      */
-    private int getNextIndex(int i) {
-        return (i + 1) % this.queue.length;
+    private int getNextIndex(final int index) {
+        return (index + 1) % this.queue.length;
     }
 }

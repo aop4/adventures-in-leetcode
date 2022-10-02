@@ -11,6 +11,9 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public class BinaryTree<V> {
+    private static final String NONEXISTENT_PARENT_MSG = "Cannot add child to nonexistent parent node.";
+    private static final int MAX_NUM_CHILDREN = 2;
+
     /**
      * The root of the tree.
      */
@@ -22,7 +25,9 @@ public class BinaryTree<V> {
      */
     @Getter
     @Setter
+    @AllArgsConstructor
     @Builder
+    @SuppressWarnings("PMD.ShortClassName")
     public static class Node<V> {
         /**
          * The node's left child.
@@ -32,11 +37,19 @@ public class BinaryTree<V> {
          * The node's right child.
          */
         private Node<V> right;
+        /**
+         * The value stored in the node.
+         */
         private V value;
-    }
 
-    private static final String NONEXISTENT_PARENT_MSG = "Cannot add child to nonexistent parent node.";
-    private static final int MAX_NUM_CHILDREN = 2;
+        /**
+         * Constructor.
+         * @param value the node's value.
+         */
+        public Node(final V value) {
+            this.value = value;
+        }
+    }
 
     /**
      * Builds a binary tree from a list representing the level-order traversal of the tree. Null list items are assumed
@@ -45,9 +58,9 @@ public class BinaryTree<V> {
      * @param levelOrderTraversal a list representing a valid level-order (i.e., level by level) traversal of a binary
      *                            tree. The list items are not actual {@link Node}s, but rather the nodes' {@code value}
      *                            fields. Null items may be used to indicate null children of a non-null parent. (To
-     *                            represent a node with an empty value, you may wish to use an {@link java.util.Optional}
-     *                            data type for {@code T}). Non-null nodes will be added to the first available non-null
-     *                            parent in the preceding level.<br>
+     *                            represent a node with an empty value, you may wish to use an
+     *                            {@link java.util.Optional} data type for {@code T}). Non-null nodes will be added to
+     *                            the first available non-null parent in the preceding level.<br>
      *                            For example, the list<br>
      *                            <code>[1,2,3,null,null,4,5,null,6]</code><br>
      *                            will result in the following tree structure:<br>
@@ -61,8 +74,7 @@ public class BinaryTree<V> {
      * @return a binary tree.
      * @throws UnsupportedOperationException if the input would require adding a child to a nonexistent node.
      */
-    @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
-    public static <T> BinaryTree<T> buildFromLevelOrderTraversal(@NonNull List<T> levelOrderTraversal) {
+    public static <T> BinaryTree<T> buildFromLevelOrderTraversal(@NonNull final List<T> levelOrderTraversal) {
         if (levelOrderTraversal.isEmpty()) {
             return new BinaryTree<>(null);
         }
@@ -74,21 +86,22 @@ public class BinaryTree<V> {
             return new BinaryTree<>(null);
         }
 
-        Node<T> root = Node.<T>builder()
-                .value(levelOrderTraversal.get(0))
-                .build();
+        return buildFromPopulatedTraversal(levelOrderTraversal);
+    }
 
-        LinkedList<Node<T>> parentQueue = new LinkedList<>(List.of(root));
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    private static <T> BinaryTree<T> buildFromPopulatedTraversal(final List<T> levelOrderTraversal) {
+        final Node<T> root = new Node<>(levelOrderTraversal.get(0));
+
+        final LinkedList<Node<T>> parentQueue = new LinkedList<>(List.of(root));
         int childReferencesRemaining = MAX_NUM_CHILDREN; // number of child slots remaining for the current parent
         for (int i = 1; i < levelOrderTraversal.size(); i++) {
             if (parentQueue.isEmpty()) {
                 throw new UnsupportedOperationException(NONEXISTENT_PARENT_MSG);
             }
-            T currVal = levelOrderTraversal.get(i);
+            final T currVal = levelOrderTraversal.get(i);
             if (currVal != null) {
-                Node<T> currNode = Node.<T>builder()
-                        .value(currVal)
-                        .build();
+                final Node<T> currNode = new Node<>(currVal);
                 parentQueue.add(currNode);
                 if (childReferencesRemaining == MAX_NUM_CHILDREN) {
                     parentQueue.peek().setLeft(currNode);
@@ -102,6 +115,6 @@ public class BinaryTree<V> {
                 childReferencesRemaining = MAX_NUM_CHILDREN;
             }
         }
-        return new BinaryTree<T>(root);
+        return new BinaryTree<>(root);
     }
 }

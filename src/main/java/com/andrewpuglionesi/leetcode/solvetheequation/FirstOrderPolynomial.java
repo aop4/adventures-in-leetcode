@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 /**
  * Represents a first-order polynomial of the form <i>Ax + b</i>.
  */
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public class FirstOrderPolynomial {
     /**
      * The coefficient for the variable of the polynomial. e.g., <i>A</i> in the equation <i>Ax + b</i>.
@@ -28,22 +27,22 @@ public class FirstOrderPolynomial {
      *                         <br>Example of valid input: {@code "-x + 2 + 4x - 3"}
      * @param variableName the name of the variable that will be mapped to {@code xCoefficient} in the resulting
      *                     polynomial. Must contain only alphabetical characters.
-     * @return a {@link FirstOrderPolynomial} that is a simplified representation of the terms in {@code polynomialString}.
-     * All like terms will be summed and grouped together in the output.
+     * @return a {@link FirstOrderPolynomial} that is a simplified representation of the terms in
+     * {@code polynomialString}. All like terms will be summed and grouped together in the output.
      * @throws IllegalArgumentException if either of the arguments are not formatted as expected.
      */
-    public static FirstOrderPolynomial buildFromString(String polynomialString, String variableName) {
+    public static FirstOrderPolynomial buildFromString(final String polynomialString, final String variableName) {
         validateVariableName(variableName);
         // remove whitespace from expression
-        polynomialString = polynomialString.replaceAll("\s", "");
+        final String trimmedPolynomial = polynomialString.replaceAll("\s", "");
 
-        validatePolynomialString(polynomialString, variableName);
+        validatePolynomialString(trimmedPolynomial, variableName);
 
         FirstOrderPolynomial polynomial = new FirstOrderPolynomial();
 
         // sum up all first-order terms in the polynomial
         Pattern.compile(String.format("[\\+\\-]?[\\d]*%s", variableName))
-                .matcher(polynomialString)
+                .matcher(trimmedPolynomial)
                 .results()
                 .map(MatchResult::group)
                 .forEach(term -> {
@@ -59,7 +58,7 @@ public class FirstOrderPolynomial {
 
         // sum up all zero-order terms (constants) in the polynomial
         Pattern.compile(String.format("[\\+\\-]?[\\d]+(%s)?", variableName))
-                .matcher(polynomialString)
+                .matcher(trimmedPolynomial)
                 .results()
                 .map(MatchResult::group)
                 .forEach(term -> {
@@ -82,7 +81,7 @@ public class FirstOrderPolynomial {
      * <ul>
      *     <li>{@code polynomialString} must contain only the variable name and '+', '-', and integer characters.</li>
      *     <li>The variable name may not be immediately followed by itself or an integer.</li>
-     *     <li>A plus or minus sign cannot be followed by another plus or minus sign, even if that is mathematically valid.</li>
+     *     <li>A plus or minus sign cannot be followed by another plus or minus sign, even if mathematically valid.</li>
      * </ul>
      * @param polynomialString a string-encoded representation of the polynomial.
      * @param variableName the variable name in the polynomial.
@@ -90,7 +89,7 @@ public class FirstOrderPolynomial {
      */
     private static void validatePolynomialString(final String polynomialString, final String variableName) {
         final Pattern acceptedChars = Pattern.compile(String.format("([\\+\\-\\d]*(%s)*)*", variableName));
-        boolean matches = acceptedChars.matcher(polynomialString).matches()
+        final boolean matches = acceptedChars.matcher(polynomialString).matches()
                 && !polynomialString.contains(variableName + variableName)
                 && !Pattern.compile(String.format("%s\\d", variableName)).matcher(polynomialString).find()
                 && !Pattern.compile("[+-]{2}").matcher(polynomialString).find();

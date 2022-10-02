@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
 public class EquationSolverTest {
     private EquationSolver equationSolver;
     private static final double EPSILON = 0.000001d;
