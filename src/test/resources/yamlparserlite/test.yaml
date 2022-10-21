@@ -1,0 +1,13 @@
+city:
+  name: Pittsburgh
+  state: Pennsylvania
+  weatherEvents: [rainy, cold, humid]
+  weatherForecast: []
+  boroughs:
+  sports:
+    football:
+      teamName: Steelers
+    baseball:
+      teamName: Pirates
+  mayor: Ed Gainey
+author: Alan Turing
