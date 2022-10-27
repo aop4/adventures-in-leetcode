@@ -13,6 +13,7 @@ import java.util.List;
 public class BinaryTree<V> {
     private static final String NONEXISTENT_PARENT_MSG = "Cannot add child to nonexistent parent node.";
     private static final int MAX_NUM_CHILDREN = 2;
+    private int size = 0;
 
     /**
      * The root of the tree.
@@ -49,6 +50,13 @@ public class BinaryTree<V> {
         public Node(final V value) {
             this.value = value;
         }
+    }
+
+    /**
+     * @return the number of items in the tree.
+     */
+    public int getSize() {
+        return this.size;
     }
 
     /**
@@ -92,6 +100,7 @@ public class BinaryTree<V> {
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     private static <T> BinaryTree<T> buildFromPopulatedTraversal(final List<T> levelOrderTraversal) {
         final Node<T> root = new Node<>(levelOrderTraversal.get(0));
+        int treeSize = 1;
 
         final LinkedList<Node<T>> parentQueue = new LinkedList<>(List.of(root));
         int childReferencesRemaining = MAX_NUM_CHILDREN; // number of child slots remaining for the current parent
@@ -108,6 +117,7 @@ public class BinaryTree<V> {
                 } else {
                     parentQueue.peek().setRight(currNode);
                 }
+                treeSize += 1;
             }
             childReferencesRemaining--; // even null nodes exhaust one of the current parent's child references
             if (childReferencesRemaining <= 0) {
@@ -115,6 +125,8 @@ public class BinaryTree<V> {
                 childReferencesRemaining = MAX_NUM_CHILDREN;
             }
         }
-        return new BinaryTree<>(root);
+        final BinaryTree<T> tree = new BinaryTree<>(root);
+        tree.size = treeSize;
+        return tree;
     }
 }

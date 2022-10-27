@@ -20,12 +20,14 @@ public class BinaryTreeTest {
     void buildFromLevelOrderTraversalEmptyList() {
         BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(Collections.emptyList());
         assertNull(tree.getRoot());
+        assertEquals(0, tree.getSize());
     }
 
     @Test
     void buildFromLevelOrderTraversalOneNullItem() {
         BinaryTree<Integer> tree = BinaryTree.buildFromLevelOrderTraversal(Collections.singletonList(null));
         assertNull(tree.getRoot());
+        assertEquals(0, tree.getSize());
     }
 
     @Test
@@ -50,6 +52,7 @@ public class BinaryTreeTest {
         assertEquals(7, tree.getRoot().getValue());
         assertNull(tree.getRoot().getLeft());
         assertNull(tree.getRoot().getRight());
+        assertEquals(1, tree.getSize());
     }
 
     @Test
@@ -61,6 +64,7 @@ public class BinaryTreeTest {
         assertEquals(7, tree.getRoot().getValue());
         assertNull(tree.getRoot().getLeft());
         assertNull(tree.getRoot().getRight());
+        assertEquals(1, tree.getSize());
     }
 
     @Test
@@ -81,6 +85,8 @@ public class BinaryTreeTest {
         assertEquals(6, right.getValue());
         assertNull(right.getLeft());
         assertNull(right.getRight());
+
+        assertEquals(2, tree.getSize());
     }
 
     @Test
@@ -101,6 +107,8 @@ public class BinaryTreeTest {
         assertEquals(6, left.getValue());
         assertNull(left.getLeft());
         assertNull(left.getRight());
+
+        assertEquals(2, tree.getSize());
     }
 
     @Test
@@ -122,6 +130,8 @@ public class BinaryTreeTest {
         assertEquals(6, left.getValue());
         assertNull(left.getLeft());
         assertNull(left.getRight());
+
+        assertEquals(2, tree.getSize());
     }
 
     @Test
@@ -144,6 +154,8 @@ public class BinaryTreeTest {
         assertEquals(5, right.getValue());
         assertNull(right.getLeft());
         assertNull(right.getRight());
+
+        assertEquals(3, tree.getSize());
     }
 
     @Test
@@ -165,6 +177,8 @@ public class BinaryTreeTest {
         assertEquals(6, left.getValue());
         assertEquals(5, left.getLeft().getValue());
         assertNull(left.getRight());
+
+        assertEquals(3, tree.getSize());
     }
 
     @Test
@@ -186,6 +200,8 @@ public class BinaryTreeTest {
         assertEquals(6, right.getValue());
         assertEquals(5, right.getRight().getValue());
         assertNull(right.getLeft());
+
+        assertEquals(3, tree.getSize());
     }
 
     @Test
@@ -210,6 +226,8 @@ public class BinaryTreeTest {
 
         assertEquals(6, right.getLeft().getValue());
         assertEquals(7, right.getRight().getValue());
+
+        assertEquals(7, tree.getSize());
     }
 
     @Test
@@ -238,6 +256,8 @@ public class BinaryTreeTest {
 
         assertNull(right.getLeft().getLeft());
         assertEquals(8, right.getLeft().getRight().getValue());
+
+        assertEquals(6, tree.getSize());
     }
 
     @Test

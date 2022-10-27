@@ -36,6 +36,8 @@
         <exclude name="BeanMembersShouldSerialize"/>
     </rule>
     <rule ref="category/java/multithreading.xml" />
-    <rule ref="category/java/performance.xml" />
+    <rule ref="category/java/performance.xml">
+        <exclude name="RedundantFieldInitializer" />
+    </rule>
 
 </ruleset>

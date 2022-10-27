@@ -1,0 +1,1 @@
+This was loosely based off of a Leetcode problem: https://leetcode.com/problems/binary-search-tree-iterator. But I applied it to a standard binary tree class I've implemented, not a BST.
