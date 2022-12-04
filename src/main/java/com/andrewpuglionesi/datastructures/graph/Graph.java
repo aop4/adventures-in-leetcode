@@ -1,14 +1,8 @@
 package com.andrewpuglionesi.datastructures.graph;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import lombok.AllArgsConstructor;
+
+import java.util.*;
 
 /**
  * Foundation for a basic in-memory unweighted graph data structure. Nodes are stored and retrieved by indexing their
@@ -19,7 +13,7 @@ import java.util.Set;
  * @param <T> the data type of nodes' values. This type should have a reliable hashCode() and equals() implementation
  *           as the graph uses a hash table to store and retrieve nodes.
  */
-@SuppressWarnings("PMD.ShortVariable")
+@SuppressWarnings({"PMD.ShortVariable", "PMD.TooManyMethods"})
 public abstract class Graph<T> implements Iterable<T> {
     /**
      * Maps node values to their respective nodes.
@@ -46,6 +40,21 @@ public abstract class Graph<T> implements Iterable<T> {
         public Node(final T value) {
             this.value = value;
             this.neighbors = new HashSet<>();
+        }
+
+        @Override
+        public boolean equals(final Object other) {
+            if (other instanceof Graph.Node) {
+                final Node otherNode = (Node) other;
+                return Objects.equals(this.value, otherNode.value)
+                        && Objects.equals(this.neighbors, otherNode.neighbors);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.value, this.neighbors);
         }
     }
 
@@ -169,16 +178,56 @@ public abstract class Graph<T> implements Iterable<T> {
         return this.nodes.keySet().iterator();
     }
 
-//    public boolean equals(Graph<T> other) {
-//        return false;
-//    }
-//
-//    public <G extends Graph<T>> G copy() {
-//        return null;
-//    }
-//
-//    public List<T> nDegrees(T from, int n) {
-//        // list of nodes exactly n degrees away from fromId
-//        return null;
-//    }
+    @Override
+    public boolean equals(final Object other) {
+        if (other instanceof Graph) {
+            return Objects.equals(this.nodes, ((Graph) other).nodes);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.nodes.hashCode();
+    }
+
+    /**
+     * Computes the minimum distance (i.e., shortest path length) between two nodes using a breadth-first traversal.
+     * @param from value of the origin node.
+     * @param to value of the destination node.
+     * @return the minimum number of edges that must be crossed to travel between the nodes, or -1 if there is no path
+     * between them.
+     */
+    public int distanceBetween(final T from, final T to) {
+        /**
+         * A small data class to track the depth of enqueued nodes in a breadth-first search.
+         */
+        @AllArgsConstructor
+        class NodeData {
+            private final T value;
+            private final int depth;
+        }
+
+        if (!this.nodes.containsKey(from) || !this.nodes.containsKey(to)) {
+            return -1;
+        }
+
+        final Set<T> visited = new HashSet<>();
+        final Queue<NodeData> queue = new LinkedList<>();
+        queue.add(new NodeData(from, 0));
+
+        while (!queue.isEmpty()) {
+            final NodeData curr = queue.poll();
+            if (Objects.equals(curr.value, to) && curr.depth > 0) {
+                return curr.depth;
+            }
+            if (!visited.contains(curr.value)) {
+                visited.add(curr.value);
+                this.getNeighbors(curr.value).forEach((neighbor) -> {
+                    queue.offer(new NodeData(neighbor, curr.depth + 1));
+                });
+            }
+        }
+        return -1;
+    }
 }

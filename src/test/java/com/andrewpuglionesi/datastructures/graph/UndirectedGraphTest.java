@@ -168,10 +168,102 @@ public class UndirectedGraphTest {
 
     @Test
     void addNodeDuplicateAddition() {
-        DirectedGraph<Integer> graph = new DirectedGraph<>();
+        UndirectedGraph<Integer> graph = new UndirectedGraph<>();
         assertThrows(UnsupportedOperationException.class, () -> {
             graph.addNode(1);
             graph.addNode(1);
         });
+    }
+
+    @Test
+    void equalsGraphWithIdenticalEdges() {
+        UndirectedGraph<Integer> graph1 = new UndirectedGraph<>() {{
+            addEdge(1, 2);
+            addEdge(1, 3);
+            addEdge(2, 3);
+        }};
+        UndirectedGraph<Integer> graph2 = new UndirectedGraph<>() {{
+            addEdge(2, 1);
+            addEdge(3, 1);
+            addEdge(3, 2);
+        }};
+        assertTrue(graph1.equals(graph2));
+    }
+
+    @Test
+    void distanceBetweenOriginDoesNotExist() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>();
+        assertEquals(-1, graph.distanceBetween("Bob", "Alice"));
+        graph.addEdge("John", "Yoko");
+        assertEquals(-1, graph.distanceBetween("Bob", "Yoko"));
+    }
+
+    @Test
+    void distanceBetweenDestinationDoesNotExist() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("John", "Yoko");
+        }};
+        assertEquals(-1, graph.distanceBetween("John", "Alice"));
+    }
+
+    @Test
+    void distanceBetweenSelfDirectedEdgeExists() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("Bob", "Bob");
+        }};
+        assertEquals(1, graph.distanceBetween("Bob", "Bob"));
+    }
+
+    @Test
+    void distanceBetweenSelfDirectedEdgeDoesNotExist() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("George", "Ringo");
+        }};
+        assertEquals(2, graph.distanceBetween("George", "George"));
+    }
+
+    @Test
+    void distanceBetweenNextDoorNeighbor() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("John", "Yoko");
+        }};
+        assertEquals(1, graph.distanceBetween("John", "Yoko"));
+        assertEquals(1, graph.distanceBetween("Yoko", "John"));
+        // the below tests that the graph does not cycle infinitely in search of the destination
+        assertEquals(-1, graph.distanceBetween("John", "Kevin Bacon"));
+    }
+
+    @Test
+    void distanceBetweenLongPath() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            // John -> Yoko -> Paul -> Ringo -> George
+            addEdge("John", "Yoko");
+            addEdge("Yoko", "Paul");
+            addEdge("Paul", "Ringo");
+            addEdge("Ringo", "George");
+        }};
+        assertEquals(4, graph.distanceBetween("John", "George"));
+        assertEquals(4, graph.distanceBetween("George", "John"));
+        assertEquals(3, graph.distanceBetween("Yoko", "George"));
+        assertEquals(3, graph.distanceBetween("George", "Yoko"));
+    }
+
+    @Test
+    void distanceBetweenChoosesShortestPath() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            // John -> John
+            // John -> Yoko -> Jimi -> George
+            // John -> Paul -> George
+            addEdge("John", "John");
+
+            addEdge("John", "Yoko");
+            addEdge("Yoko", "Jimi");
+            addEdge("Jimi", "George");
+
+            addEdge("John", "Paul");
+            addEdge("Paul", "George");
+        }};
+        assertEquals(2, graph.distanceBetween("John", "George"));
+        assertEquals(2, graph.distanceBetween("George", "John"));
     }
 }

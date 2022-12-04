@@ -9,10 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DirectedGraphTest {
 
@@ -170,5 +167,151 @@ public class DirectedGraphTest {
             graph.addNode(1);
             graph.addNode(1);
         });
+    }
+
+    @Test
+    void equalsNUll() {
+        DirectedGraph<Integer> graph = new DirectedGraph<>() {{
+            addEdge(1, 2);
+        }};
+        assertFalse(graph.equals(null));
+    }
+
+    @Test
+    void equalsObjectThatIsNotAGraph() {
+        DirectedGraph<Integer> graph = new DirectedGraph<>() {{
+            addEdge(1, 2);
+        }};
+        assertFalse(graph.equals("Daffy Duck"));
+    }
+
+    @Test
+    void equalsGraphWithDifferentDataType() {
+        DirectedGraph<Integer> graph1 = new DirectedGraph<>() {{
+            addEdge(1, 2);
+        }};
+        DirectedGraph<String> graph2 = new DirectedGraph<>() {{
+            addEdge("John", "Yoko");
+        }};
+        assertFalse(graph1.equals(graph2));
+        assertNotEquals(graph1.hashCode(), graph2.hashCode());
+    }
+
+    @Test
+    void equalsGraphWithDifferentEdges() {
+        DirectedGraph<Integer> graph1 = new DirectedGraph<>() {{
+            addEdge(1, 2);
+        }};
+        DirectedGraph<Integer> graph2 = new DirectedGraph<>() {{
+            addEdge(2, 1);
+        }};
+        assertFalse(graph1.equals(graph2));
+        assertNotEquals(graph1.hashCode(), graph2.hashCode());
+    }
+
+    @Test
+    void equalsGraphWithSameEdges() {
+        DirectedGraph<Integer> graph1 = new DirectedGraph<>() {{
+            addEdge(1, 2);
+            addEdge(1, 3);
+            addEdge(2, 3);
+        }};
+        DirectedGraph<Integer> graph2 = new DirectedGraph<>() {{
+            addEdge(1, 2);
+            addEdge(1, 3);
+            addEdge(2, 3);
+        }};
+        assertTrue(graph1.equals(graph2));
+        assertEquals(graph1.hashCode(), graph2.hashCode());
+    }
+
+    @Test
+    void distanceBetweenOriginDoesNotExist() {
+        DirectedGraph<String> graph = new DirectedGraph<>();
+        assertEquals(-1, graph.distanceBetween("Bob", "Alice"));
+        graph.addEdge("John", "Yoko");
+        assertEquals(-1, graph.distanceBetween("Bob", "Yoko"));
+    }
+
+    @Test
+    void distanceBetweenDestinationDoesNotExist() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("John", "Yoko");
+        }};
+        assertEquals(-1, graph.distanceBetween("John", "Alice"));
+    }
+
+    @Test
+    void distanceBetweenSelfDirectedEdgeExists() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("Bob", "Bob");
+        }};
+        assertEquals(1, graph.distanceBetween("Bob", "Bob"));
+    }
+
+    @Test
+    void distanceBetweenSelfDirectedEdgeDoesNotExist() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("George", "Ringo");
+        }};
+        assertEquals(-1, graph.distanceBetween("George", "George"));
+    }
+
+    @Test
+    void distanceBetweenNextDoorNeighbor() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("John", "Yoko");
+        }};
+        assertEquals(1, graph.distanceBetween("John", "Yoko"));
+    }
+
+    @Test
+    void distanceBetweenQueryIsInWrongDirection() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("John", "Yoko");
+        }};
+        assertEquals(-1, graph.distanceBetween("Yoko", "John"));
+    }
+
+    @Test
+    void distanceBetweenCycle() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("George", "Ringo");
+            addEdge("Ringo", "George");
+        }};
+        assertEquals(2, graph.distanceBetween("George", "George"));
+        // the below tests that the graph does not cycle infinitely in search of the destination
+        assertEquals(-1, graph.distanceBetween("George", "Yoko"));
+    }
+
+    @Test
+    void distanceBetweenLongPath() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            // John -> Yoko -> Paul -> Ringo -> George
+            addEdge("John", "Yoko");
+            addEdge("Yoko", "Paul");
+            addEdge("Paul", "Ringo");
+            addEdge("Ringo", "George");
+        }};
+        assertEquals(4, graph.distanceBetween("John", "George"));
+        assertEquals(3, graph.distanceBetween("Yoko", "George"));
+    }
+
+    @Test
+    void distanceBetweenChoosesShortestPath() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            // John -> John
+            // John -> Yoko -> Jimi -> George
+            // John -> Paul -> George
+            addEdge("John", "John");
+
+            addEdge("John", "Yoko");
+            addEdge("Yoko", "Jimi");
+            addEdge("Jimi", "George");
+
+            addEdge("John", "Paul");
+            addEdge("Paul", "George");
+        }};
+        assertEquals(2, graph.distanceBetween("John", "George"));
     }
 }
