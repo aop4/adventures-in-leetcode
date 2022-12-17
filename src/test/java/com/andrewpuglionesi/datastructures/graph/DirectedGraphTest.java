@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -313,5 +315,97 @@ public class DirectedGraphTest {
             addEdge("Paul", "George");
         }};
         assertEquals(2, graph.distanceBetween("John", "George"));
+    }
+
+    @Test
+    void isConnectedGraphEmptyGraph() {
+        DirectedGraph<String> graph = new DirectedGraph<>();
+        assertFalse(graph.isConnectedGraph());
+    }
+
+    @Test
+    void isConnectedGraphSingleton() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addNode("Kevin bacon");
+        }};
+        assertTrue(graph.isConnectedGraph());
+    }
+
+    @Test
+    void isConnectedGraphLinearChain() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("Kevin bacon", "Tom Cruise");
+            addEdge("Tom Cruise", "Zooey Deschanel");
+            addEdge("Zooey Deschanel", "Danny DeVito");
+        }};
+        assertFalse(graph.isConnectedGraph());
+    }
+
+    @Test
+    void isConnectedGraphLinearChainWithBackEdges() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("Kevin bacon", "Tom Cruise");
+            addEdge("Tom Cruise", "Kevin bacon");
+
+            addEdge("Tom Cruise", "Zooey Deschanel");
+            addEdge("Zooey Deschanel", "Tom Cruise");
+
+            addEdge("Zooey Deschanel", "Danny DeVito");
+            addEdge("Danny DeVito", "Zooey Deschanel");
+        }};
+        assertTrue(graph.isConnectedGraph());
+    }
+
+    @Test
+    void isConnectedGraphCycle() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("Kevin bacon", "Tom Cruise");
+            addEdge("Tom Cruise", "Zooey Deschanel");
+            addEdge("Zooey Deschanel", "Kevin bacon");
+        }};
+        assertTrue(graph.isConnectedGraph());
+    }
+
+    @Test
+    void isConnectedGraphLonerNode() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("Kevin bacon", "Tom Cruise");
+            addEdge("Tom Cruise", "Zooey Deschanel");
+            addNode("Danny DeVito");
+        }};
+        assertFalse(graph.isConnectedGraph());
+    }
+
+    @Test
+    void isConnectedGraphTwoIslands() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("Kevin bacon", "Tom Cruise");
+            addEdge("Tom Cruise", "Zooey Deschanel");
+
+            addEdge("Danny DeVito", "Will Smith");
+            addEdge("Will Smith", "Sadie Sink");
+        }};
+        assertFalse(graph.isConnectedGraph());
+    }
+
+    @Test
+    void getNodesConnectedToSourceNodeAbsent() {
+        DirectedGraph<String> graph = new DirectedGraph<>();
+        assertThrows(NoSuchElementException.class, () -> graph.getNodesConnectedTo("a"));
+    }
+
+    @Test
+    void getNodesConnectedTo() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            // Kevin->Tom->Zooey<-Sadie
+            addEdge("Kevin bacon", "Kevin bacon");
+
+            addEdge("Kevin bacon", "Tom Cruise");
+
+            addEdge("Tom Cruise", "Zooey Deschanel");
+
+            addEdge("Sadie Sink", "Zooey Deschanel");
+        }};
+        assertEquals(Set.of("Tom Cruise", "Zooey Deschanel"), graph.getNodesConnectedTo("Kevin bacon"));
     }
 }

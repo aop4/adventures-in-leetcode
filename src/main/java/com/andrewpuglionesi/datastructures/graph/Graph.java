@@ -81,7 +81,7 @@ public abstract class Graph<T> implements Iterable<T> {
      * @throws UnsupportedOperationException if the graph already contains a node with the specified value.
      */
     public void addNode(final T value) {
-        if (this.nodes.containsKey(value)) {
+        if (this.containsNode(value)) {
             throw new UnsupportedOperationException("There is already a node in the Graph with value: " + value);
         }
         this.nodes.put(value, new Node(value));
@@ -104,10 +104,10 @@ public abstract class Graph<T> implements Iterable<T> {
      * @param to value of the node that is the terminus of the edge.
      */
     protected void insertEdge(final T from, final T to) {
-        if (!this.nodes.containsKey(from)) {
+        if (!this.containsNode(from)) {
             this.addNode(from);
         }
-        if (!this.nodes.containsKey(to)) {
+        if (!this.containsNode(to)) {
             this.addNode(to);
         }
         this.nodes.get(from).neighbors.add(to);
@@ -164,6 +164,13 @@ public abstract class Graph<T> implements Iterable<T> {
     }
 
     /**
+     * @return true if the graph has no nodes.
+     */
+    public boolean isEmpty() {
+        return this.size() == 0;
+    }
+
+    /**
      * @return the number of nodes in the graph.
      */
     public int size() {
@@ -208,7 +215,7 @@ public abstract class Graph<T> implements Iterable<T> {
             private final int depth;
         }
 
-        if (!this.nodes.containsKey(from) || !this.nodes.containsKey(to)) {
+        if (!this.containsNode(from) || !this.containsNode(to)) {
             return -1;
         }
 
@@ -230,4 +237,46 @@ public abstract class Graph<T> implements Iterable<T> {
         }
         return -1;
     }
+
+    /**
+     * @param node value of a node.
+     * @return true if the node is present in the graph.
+     */
+    public boolean containsNode(final T node) {
+        return this.nodes.containsKey(node);
+    }
+
+    /**
+     * Determines if the graph is connected. In a connected graph, every node is connected to every other node by
+     * a path of one or more edges. For directed graphs, this tests for strong connectivity, meaning that an edge that
+     * connects A to B directionally is not considered to connect B to A.
+     * @return true if this is a connected graph. An empty graph is not considered to be connected.
+     */
+    public abstract boolean isConnectedGraph();
+
+    /**
+     * Retrieves all nodes that are connected to {@code source} by one or more edges. The set will not contain
+     * {@code source} even if it is connected to itself.
+     * @param source value of a node.
+     * @return a set containing the values of all nodes connected to {@code source}, excluding {@code source} itself.
+     */
+    protected Set<T> getNodesConnectedTo(final T source) {
+        if (!this.containsNode(source)) {
+            throw new NoSuchElementException("No node exists with value " + source);
+        }
+        final Set<T> visited = new HashSet<>();
+        this.collectConnectionsDepthFirst(source, visited);
+        visited.remove(source);
+        return visited;
+    }
+
+    private void collectConnectionsDepthFirst(final T source, final Set<T> visited) {
+        if (!visited.contains(source)) {
+            visited.add(source);
+            for (final T neighbor : this.getNeighbors(source)) {
+                this.collectConnectionsDepthFirst(neighbor, visited);
+            }
+        }
+    }
+
 }
