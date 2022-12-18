@@ -36,6 +36,44 @@ public class DirectedGraph<T> extends Graph<T> {
         super.deleteEdge(from, to);
     }
 
+    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+    @Override
+    public boolean hasCycle() {
+        final Set<T> visited = new HashSet<>();
+        for (final T node : this) {
+            if (this.searchForCycle(node, visited, new HashSet<>())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if a cycle is detected during a depth-first search.
+     * @param node the node currently being hit by the recursive search.
+     * @param visited a set of all nodes that have been visited by the cycle-searching algorithm since its inception.
+     * @param precedingNodes a set of nodes preceding this node in the current depth-first-search path. If a node in
+     *                       this set is reached, then there is a cycle.
+     * @return true if a cycle is detected during a depth-first search starting at {@code node}.
+     */
+    private boolean searchForCycle(final T node, final Set<T> visited, final Set<T> precedingNodes) {
+        if (precedingNodes.contains(node)) {
+            return true;
+        }
+        if (visited.contains(node)) {
+            return false;
+        }
+        precedingNodes.add(node);
+        visited.add(node);
+        for (final T neighbor : this.getNeighbors(node)) {
+            if (this.searchForCycle(neighbor, visited, precedingNodes)) {
+                return true;
+            }
+        }
+        precedingNodes.remove(node);
+        return false;
+    }
+
     @Override
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     public boolean isConnectedGraph() {

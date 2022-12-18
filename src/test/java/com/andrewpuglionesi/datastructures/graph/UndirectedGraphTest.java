@@ -338,4 +338,156 @@ public class UndirectedGraphTest {
         }};
         assertEquals(Set.of("Tom Cruise", "Zooey Deschanel", "Sadie Sink"), graph.getNodesConnectedTo("Kevin bacon"));
     }
+
+    @Test
+    void hasCycleEmptyGraph() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>();
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleSingletonGraph() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addNode("a");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleSingleEdge() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleReflexiveEdge() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "a");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTriangleCycle() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b");
+            addEdge("b", "c");
+            addEdge("c", "a");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleFourMemberCycle() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b");
+            addEdge("b", "c");
+            addEdge("c", "d");
+            addEdge("d", "a");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleNonCyclicConvergence() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            // a->c<-b
+            addEdge("a", "c");
+            addEdge("b", "c");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleNonCyclicIslands() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b");
+
+            addEdge("c", "d");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleCyclicIsland() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b");
+
+            addEdge("c", "d");
+            addEdge("d", "e");
+            addEdge("e", "c");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTree() {
+        UndirectedGraph<Integer> graph = new UndirectedGraph<>() {{
+            /*
+                    1
+               2         3
+            4    5     6   7
+             */
+            addEdge(1, 2);
+            addEdge(1, 3);
+
+            addEdge(2, 4);
+            addEdge(2, 5);
+
+            addEdge(3, 6);
+            addEdge(3, 7);
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTreeWithCrossEdge() {
+        UndirectedGraph<Integer> graph = new UndirectedGraph<>() {{
+            /*
+                    1
+               2         3
+            4    5 -> 6    7
+             */
+            // establishes a full binary tree
+            addEdge(1, 2);
+            addEdge(1, 3);
+
+            addEdge(2, 4);
+            addEdge(2, 5);
+
+            addEdge(3, 6);
+            addEdge(3, 7);
+
+            // creates a sideways edge that leads to a large cycle
+            addEdge(5, 6);
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTreeWithBackEdges() {
+        UndirectedGraph<Integer> graph = new UndirectedGraph<>() {{
+            /*
+                    1
+               2         3
+            4    5     6   7
+             */
+            // establishes a full binary tree
+            addEdge(1, 2);
+            addEdge(1, 3);
+
+            addEdge(2, 4);
+            addEdge(2, 5);
+
+            addEdge(3, 6);
+            addEdge(3, 7);
+
+            // creates back edges linking leaves to the root
+            addEdge(5, 1);
+            addEdge(6, 1);
+        }};
+        assertTrue(graph.hasCycle());
+    }
 }

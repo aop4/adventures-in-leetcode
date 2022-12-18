@@ -247,6 +247,12 @@ public abstract class Graph<T> implements Iterable<T> {
     }
 
     /**
+     * @return true if there exists a cycle in the graph. A cycle is a path beginning at a node, N, that ultimately
+     * revisits N. In other words, it is a circular path. A self-directed edge constitutes a cycle.
+     */
+    public abstract boolean hasCycle();
+
+    /**
      * Determines if the graph is connected. In a connected graph, every node is connected to every other node by
      * a path of one or more edges. For directed graphs, this tests for strong connectivity, meaning that an edge that
      * connects A to B directionally is not considered to connect B to A.

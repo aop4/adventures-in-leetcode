@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -407,5 +406,168 @@ public class DirectedGraphTest {
             addEdge("Sadie Sink", "Zooey Deschanel");
         }};
         assertEquals(Set.of("Tom Cruise", "Zooey Deschanel"), graph.getNodesConnectedTo("Kevin bacon"));
+    }
+
+    @Test
+    void hasCycleEmptyGraph() {
+        DirectedGraph<String> graph = new DirectedGraph<>();
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleSingletonGraph() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addNode("a");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleSingleEdge() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleReflexiveEdge() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "a");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleMinimalCycle() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b");
+            addEdge("b", "a");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTriangleCycle() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b");
+            addEdge("b", "c");
+            addEdge("c", "a");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleFourMemberCycle() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b");
+            addEdge("b", "c");
+            addEdge("c", "d");
+            addEdge("d", "a");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleNonCyclicConvergence() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            // a->c<-b
+            addEdge("a", "c");
+            addEdge("b", "c");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleNonCyclicIslands() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b");
+
+            addEdge("c", "d");
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleCyclicIsland() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b");
+
+            addEdge("c", "d");
+            addEdge("d", "c");
+        }};
+        assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTree() {
+        DirectedGraph<Integer> graph = new DirectedGraph<>() {{
+            /*
+                    1
+               2         3
+            4    5     6   7
+             */
+            addEdge(1, 2);
+            addEdge(1, 3);
+
+            addEdge(2, 4);
+            addEdge(2, 5);
+
+            addEdge(3, 6);
+            addEdge(3, 7);
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTreeWithCrossEdges() {
+        DirectedGraph<Integer> graph = new DirectedGraph<>() {{
+            /*
+                    1
+               2 ------> 3
+            4 -> 5 --> 6 -> 7
+             */
+            // establishes a full binary tree
+            addEdge(1, 2);
+            addEdge(1, 3);
+
+            addEdge(2, 4);
+            addEdge(2, 5);
+
+            addEdge(3, 6);
+            addEdge(3, 7);
+
+            // creates sideways edges linking the nodes of a given level
+            addEdge(2, 3);
+            addEdge(4, 5);
+            addEdge(5, 6);
+            addEdge(6, 7);
+        }};
+        assertFalse(graph.hasCycle());
+    }
+
+    @Test
+    void hasCycleTreeWithBackEdges() {
+        DirectedGraph<Integer> graph = new DirectedGraph<>() {{
+            /*
+                    1
+               2         3
+            4    5     6   7
+             */
+            // establishes a full binary tree
+            addEdge(1, 2);
+            addEdge(1, 3);
+
+            addEdge(2, 4);
+            addEdge(2, 5);
+
+            addEdge(3, 6);
+            addEdge(3, 7);
+
+            // creates back edges linking leaves to the root
+            addEdge(5, 1);
+            addEdge(6, 1);
+        }};
+        assertTrue(graph.hasCycle());
     }
 }
