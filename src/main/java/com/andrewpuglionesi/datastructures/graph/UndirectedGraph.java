@@ -29,6 +29,12 @@ public class UndirectedGraph<T> extends Graph<T> {
     }
 
     @Override
+    public void addEdge(final T from, final T to, final double weight) {
+        super.insertEdge(from, to, weight);
+        super.insertEdge(to, from, weight);
+    }
+
+    @Override
     public void addEdge(final T from, final T to) {
         super.insertEdge(from, to);
         super.insertEdge(to, from);
@@ -99,6 +105,14 @@ public class UndirectedGraph<T> extends Graph<T> {
         final T source = this.iterator().next();
         final Set<T> nodesConnectedToSource = this.getNodesConnectedTo(source);
         return nodesConnectedToSource.size() == this.size() - 1;
+    }
+
+    /**
+     * @return the sum of every edge's weight, combined.
+     */
+    @Override
+    public double totalWeight() {
+        return super.totalWeight() / 2; // divide by 2 because every edge from A to B has a mirrored edge from B to A.
     }
 
 }

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -189,6 +190,32 @@ public class UndirectedGraphTest {
             addEdge(3, 2);
         }};
         assertTrue(graph1.equals(graph2));
+    }
+
+    @Test
+    void equalsGraphWithSameWeights() {
+        DirectedGraph<String> graph1 = new DirectedGraph<>() {{
+            addEdge("a", "b", 3);
+        }};
+        DirectedGraph<String> graph2 = new DirectedGraph<>() {{
+            addEdge("a", "b", 3);
+        }};
+
+        assertTrue(graph1.equals(graph2));
+        assertEquals(graph1.hashCode(), graph2.hashCode());
+    }
+
+    @Test
+    void equalsGraphWithDifferentWeights() {
+        DirectedGraph<String> graph1 = new DirectedGraph<>() {{
+            addEdge("a", "b", 3);
+        }};
+        DirectedGraph<String> graph2 = new DirectedGraph<>() {{
+            addEdge("a", "b", 12);
+        }};
+
+        assertFalse(graph1.equals(graph2));
+        assertNotEquals(graph1.hashCode(), graph2.hashCode());
     }
 
     @Test
@@ -489,5 +516,49 @@ public class UndirectedGraphTest {
             addEdge(6, 1);
         }};
         assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void totalWeightEmptyGraph() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>();
+        assertEquals(0, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightUnspecifiedWeights() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b");
+            addEdge("b", "a");
+        }};
+        assertEquals(0, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightSpecifiedWeights() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b", -3);
+            addEdge("b", "c", -6);
+        }};
+        assertEquals(-9, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightUpdatedWeights() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b", 3);
+            addEdge("b", "c", 6);
+            addEdge("b", "c", 4); // updates b->c edge weight
+        }};
+        assertEquals(7, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightAfterEdgeRemoval() {
+        UndirectedGraph<String> graph = new UndirectedGraph<>() {{
+            addEdge("a", "b", -3);
+            addEdge("b", "c", -6);
+            removeEdge("b", "c");
+        }};
+        assertEquals(-3, graph.totalWeight());
     }
 }

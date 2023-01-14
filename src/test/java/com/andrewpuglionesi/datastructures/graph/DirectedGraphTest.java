@@ -227,6 +227,32 @@ public class DirectedGraphTest {
     }
 
     @Test
+    void equalsGraphWithSameWeights() {
+        DirectedGraph<String> graph1 = new DirectedGraph<>() {{
+            addEdge("a", "b", 3);
+        }};
+        DirectedGraph<String> graph2 = new DirectedGraph<>() {{
+            addEdge("a", "b", 3);
+        }};
+
+        assertTrue(graph1.equals(graph2));
+        assertEquals(graph1.hashCode(), graph2.hashCode());
+    }
+
+    @Test
+    void equalsGraphWithDifferentWeights() {
+        DirectedGraph<String> graph1 = new DirectedGraph<>() {{
+            addEdge("a", "b", 3);
+        }};
+        DirectedGraph<String> graph2 = new DirectedGraph<>() {{
+            addEdge("a", "b", 12);
+        }};
+
+        assertFalse(graph1.equals(graph2));
+        assertNotEquals(graph1.hashCode(), graph2.hashCode());
+    }
+
+    @Test
     void distanceBetweenOriginDoesNotExist() {
         DirectedGraph<String> graph = new DirectedGraph<>();
         assertEquals(-1, graph.distanceBetween("Bob", "Alice"));
@@ -569,5 +595,55 @@ public class DirectedGraphTest {
             addEdge(6, 1);
         }};
         assertTrue(graph.hasCycle());
+    }
+
+    @Test
+    void totalWeightEmptyGraph() {
+        DirectedGraph<String> graph = new DirectedGraph<>();
+        assertEquals(0, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightUnspecifiedWeights() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b");
+            addEdge("b", "a");
+        }};
+        assertEquals(0, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightSpecifiedWeights() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b", -3);
+            addEdge("b", "c", -6);
+        }};
+        assertEquals(-9, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightUpdatedWeights() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b", 3);
+            addEdge("b", "c", 6);
+            addEdge("b", "c", 4); // updates b->c edge weight
+        }};
+        assertEquals(7, graph.totalWeight());
+    }
+
+    @Test
+    void totalWeightAfterEdgeRemoval() {
+        DirectedGraph<String> graph = new DirectedGraph<>() {{
+            addEdge("a", "b", -3);
+            addEdge("b", "c", -6);
+            removeEdge("b", "c");
+        }};
+        assertEquals(-3, graph.totalWeight());
+    }
+
+    @Test
+    void containsEdgeEdgeDoesNotExist() {
+        DirectedGraph<String> graph = new DirectedGraph<>();
+        assertFalse(graph.containsEdge("a", "b"));
     }
 }

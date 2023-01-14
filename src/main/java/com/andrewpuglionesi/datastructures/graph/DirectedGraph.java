@@ -27,6 +27,11 @@ public class DirectedGraph<T> extends Graph<T> {
     }
 
     @Override
+    public void addEdge(final T from, final T to, final double edgeWeight) {
+        super.insertEdge(from, to, edgeWeight);
+    }
+
+    @Override
     public void addEdge(final T from, final T to) {
         super.insertEdge(from, to);
     }
@@ -117,5 +122,13 @@ public class DirectedGraph<T> extends Graph<T> {
             }
         }
         return false; // Neither this node nor any of its (indirect) connections was in fullyConnectedNodes
+    }
+
+    /**
+     * @return the sum of every edge's weight, combined.
+     */
+    @Override
+    public double totalWeight() {
+        return super.totalWeight();
     }
 }

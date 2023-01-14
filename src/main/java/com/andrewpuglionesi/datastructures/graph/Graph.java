@@ -1,60 +1,58 @@
 package com.andrewpuglionesi.datastructures.graph;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.*;
 
 /**
- * Foundation for a basic in-memory unweighted graph data structure. Nodes are stored and retrieved by indexing their
- * values in a Map. A node's neighbors are stored in the node object as a Set. The nodes' values must be unique. The
- * implementations in this abstract class do not dictate whether the graph is directed or undirected, nor
- * do they dictate whether the graph can contain cycles or reflexive edges. The addEdge and removeEdge methods are
- * not implemented so that concrete subclasses may control this behavior.
+ * Foundation for a basic in-memory graph data structure. Nodes are stored and retrieved by indexing their
+ * values in a Map. The nodes' values must be unique. The implementations in this abstract class do not dictate whether
+ * the graph is directed or undirected, nor do they dictate whether the graph can contain cycles or reflexive edges.
+ * The addEdge and removeEdge methods are not implemented so that concrete subclasses may control this behavior.
  * @param <T> the data type of nodes' values. This type should have a reliable hashCode() and equals() implementation
  *           as the graph uses a hash table to store and retrieve nodes.
  */
-@SuppressWarnings({"PMD.ShortVariable", "PMD.TooManyMethods"})
+@SuppressWarnings({"PMD.ShortVariable", "PMD.ShortClassName", "PMD.TooManyMethods"})
 public abstract class Graph<T> implements Iterable<T> {
-    /**
-     * Maps node values to their respective nodes.
-     */
-    private final Map<T, Node> nodes;
 
     /**
-     * A graph node.
+     * The default weight of edges in the graph (used when no weight value is specified).
      */
-    @SuppressWarnings("PMD.ShortClassName")
-    private class Node {
+    public static final double DEFAULT_EDGE_WEIGHT = 0;
+
+    /**
+     * Maps a node's value to the neighbors of the node.
+     */
+    private final Map<T, Map<T, Edge>> nodes;
+
+    /**
+     * Represents a weighted edge in the graph.
+     */
+    @Getter
+    protected static class Edge {
         /**
-         * Unique value for the node.
+         * Numeric weight of the edge.
          */
-        private final T value;
-        /**
-         * Values of nodes to which this node is connected.
-         */
-        private final Set<T> neighbors;
+        private final double weight;
 
         /**
-         * @param value node value.
+         * Creates a new edge.
+         * @param weight the new edge's weight.
          */
-        public Node(final T value) {
-            this.value = value;
-            this.neighbors = new HashSet<>();
+        public Edge(final double weight) {
+            this.weight = weight;
         }
 
         @Override
         public boolean equals(final Object other) {
-            if (other instanceof Graph.Node) {
-                final Node otherNode = (Node) other;
-                return Objects.equals(this.value, otherNode.value)
-                        && Objects.equals(this.neighbors, otherNode.neighbors);
-            }
-            return false;
+            return other instanceof Graph.Edge
+                    && this.weight == ((Edge) other).weight;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.value, this.neighbors);
+            return Objects.hash(this.weight);
         }
     }
 
@@ -84,33 +82,50 @@ public abstract class Graph<T> implements Iterable<T> {
         if (this.containsNode(value)) {
             throw new UnsupportedOperationException("There is already a node in the Graph with value: " + value);
         }
-        this.nodes.put(value, new Node(value));
+        this.nodes.put(value, new HashMap<>());
     }
 
     /**
-     * Adds an edge to the graph between nodes with the specified values. If a node with either value does not exist,
-     * the node will be created. If the edge already exists, there will be no change. Self-directed edges are allowed.
-     * @param from value of the node that is the origin of the edge (assuming the graph is directed).
-     * @param to value of the node that is the terminus of the edge (assuming the graph is directed).
+     * See {@link #addEdge(Object, Object, double)}. The newly added edge will have the default edge weight of
+     * {@value DEFAULT_EDGE_WEIGHT}.
      */
     public abstract void addEdge(T from, T to);
 
     /**
-     * Inserts a new edge between nodes with the values {@code from} and {@code to}. The node whose value is
-     * equal to {@code from} will be the source of the edge. The node whose value is {@code to} will be the terminus.
+     * Adds an edge to the graph between nodes with the specified values. If a node with either value does not exist,
+     * the node will be created. If the edge already exists, its weight will be updated.
+     * @param from value of the node that is the origin of the edge (assuming the graph is directed).
+     * @param to value of the node that is the terminus of the edge (assuming the graph is directed).
+     * @param edgeWeight the numeric weight of the new edge.
+     */
+    public abstract void addEdge(T from, T to, double edgeWeight);
+
+    /**
+     * See {@link #insertEdge(Object, Object, double)}. The newly added edge will have the default edge weight of
+     * {@value DEFAULT_EDGE_WEIGHT}.
+     */
+    protected void insertEdge(final T from, final T to) {
+        this.insertEdge(from, to, DEFAULT_EDGE_WEIGHT);
+    }
+
+    /**
+     * Inserts a new edge between nodes with the values {@code from} and {@code to}.
+     * The node whose value is equal to {@code from} will be the source of the edge. The node whose value is {@code to}
+     * will be the terminus.
      * In other words, adds the node whose value is {@code to} into the neighbors of the node whose value is
      * {@code from}. The nodes will be created if no nodes with the supplied values exist.
      * @param from value of the node that is the origin of the edge.
      * @param to value of the node that is the terminus of the edge.
+     * @param edgeWeight the numeric weight of the new edge.
      */
-    protected void insertEdge(final T from, final T to) {
+    protected void insertEdge(final T from, final T to, final double edgeWeight) {
         if (!this.containsNode(from)) {
             this.addNode(from);
         }
         if (!this.containsNode(to)) {
             this.addNode(to);
         }
-        this.nodes.get(from).neighbors.add(to);
+        this.nodes.get(from).put(to, new Edge(edgeWeight));
     }
 
     /**
@@ -129,9 +144,9 @@ public abstract class Graph<T> implements Iterable<T> {
      * @param to value of the node that is the terminus of the edge.
      */
     protected void deleteEdge(final T from, final T to) {
-        final Node fromNode = this.nodes.get(from);
-        if (fromNode != null && fromNode.neighbors != null) {
-            fromNode.neighbors.remove(to);
+        final Map<T, Edge> edges = this.nodes.get(from);
+        if (edges != null) {
+            edges.remove(to);
         }
     }
 
@@ -142,8 +157,8 @@ public abstract class Graph<T> implements Iterable<T> {
      * @return true if the edge exists.
      */
     public boolean containsEdge(final T from, final T to) {
-        final Node fromNode = this.nodes.get(from);
-        return fromNode != null && fromNode.neighbors != null && fromNode.neighbors.contains(to);
+        final Map<T, Edge> edges = this.nodes.get(from);
+        return edges != null && edges.containsKey(to);
     }
 
     /**
@@ -152,13 +167,13 @@ public abstract class Graph<T> implements Iterable<T> {
      * @return a list of nodes that are connected to {@code from} in the graph.
      */
     public List<T> getNeighbors(final T from) {
-        final Node fromNode = this.nodes.get(from);
-        if (fromNode == null) {
+        if (!this.containsNode(from)) {
             throw new NoSuchElementException("Cannot retrieve neighbors because node does not exist in graph: " + from);
         }
+        final Map<T, Edge> edges = this.nodes.get(from);
         final List<T> neighbors = new ArrayList<>();
-        if (fromNode.neighbors != null) {
-            neighbors.addAll(fromNode.neighbors);
+        if (edges != null) {
+            neighbors.addAll(edges.keySet());
         }
         return neighbors;
     }
@@ -199,7 +214,8 @@ public abstract class Graph<T> implements Iterable<T> {
     }
 
     /**
-     * Computes the minimum distance (i.e., shortest path length) between two nodes using a breadth-first traversal.
+     * Computes the minimum distance (i.e., shortest path length) between two nodes using a breadth-first traversal. The
+     * path length is calculated as the number of edges, not as a sum of edge weights.
      * @param from value of the origin node.
      * @param to value of the destination node.
      * @return the minimum number of edges that must be crossed to travel between the nodes, or -1 if there is no path
@@ -285,4 +301,14 @@ public abstract class Graph<T> implements Iterable<T> {
         }
     }
 
+    /**
+     * @return the sum of every edge's weight, combined.
+     */
+    protected double totalWeight() {
+        return this.nodes.values()
+                .stream()
+                .flatMap(map -> map.values().stream())
+                .mapToDouble(Edge::getWeight)
+                .sum();
+    }
 }
