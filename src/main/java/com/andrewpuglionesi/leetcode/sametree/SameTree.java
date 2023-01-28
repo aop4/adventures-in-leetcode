@@ -16,6 +16,7 @@ public class SameTree {
      * @return true if the trees are equivalent, false otherwise.
      * @param <T> data type of the nodes' values in each tree. Both trees must have exactly the same type.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public <T> boolean areTreesEqual(@NonNull final BinaryTree<T> tree1, @NonNull final BinaryTree<T> tree2) {
         if (tree1 == tree2) {
             return true;

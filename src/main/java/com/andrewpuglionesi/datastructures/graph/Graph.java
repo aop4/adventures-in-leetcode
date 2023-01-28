@@ -179,6 +179,44 @@ public abstract class Graph<T> implements Iterable<T> {
     }
 
     /**
+     * Provides a read-only view of a graph edge.
+     */
+    @AllArgsConstructor
+    @Getter
+    public class EdgeView {
+        /**
+         * The origin node of the edge.
+         */
+        private final T source;
+        /**
+         * The destination node of the edge.
+         */
+        private final T destination;
+        /**
+         * The weight of the edge.
+         */
+        private final double weight;
+    }
+
+    /**
+     * Retrieves a list of edges emanating from a specific node.
+     * Modifying the returned list will not modify the graph.
+     * @param from value of the node whose neighbors to retrieve.
+     * @return edges whose origin is {@code from}.
+     */
+    public List<EdgeView> getOutboundEdges(final T from) {
+        if (!this.containsNode(from)) {
+            throw new NoSuchElementException("Cannot retrieve neighbors because node does not exist in graph: " + from);
+        }
+        final List<EdgeView> output = new ArrayList<>();
+        final Map<T, Edge> edges = this.nodes.get(from);
+        for (final Map.Entry<T, Edge> entry : edges.entrySet()) {
+            output.add(new EdgeView(from, entry.getKey(), entry.getValue().weight));
+        }
+        return output;
+    }
+
+    /**
      * @return true if the graph has no nodes.
      */
     public boolean isEmpty() {
