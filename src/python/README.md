@@ -19,15 +19,20 @@ cd src/python
 # create a virtual environment called venv
 python3 -m venv venv
 # activate the virtual environment
-source venv/bin/activate
+source venv/bin/activate # In Windows, run: venv\Scripts\activate
 # install dependencies within the virtual environment
 pip install -r requirements.txt
 ```
 
 # Run a full build
-The full build will install dependencies, run unit tests with coverage, and run a linter. It assumes you have created a virtual environment in a `src/python/venv` directory as above.
+The full build will activate your virtual environment, install dependencies, run unit tests with coverage, and run a linter. It assumes you have created a virtual environment in `src/python/venv` as above.
+## Linux
 ```bash
 bash full_build
+```
+## Windows
+```bat
+.\full_build.bat
 ```
 
 # Run unit tests with coverage
@@ -39,9 +44,17 @@ coverage report
 ```
 
 # Run linter
+## Linux
 ```bash
 # Scan all Python files under the current directory:
 python3 -m pylint *
 # Scan Python files in a specific module:
 python3 -m pylint leetcode
+```
+## Windows
+```bash
+# Scan all Python files under the current directory:
+pylint *
+# Scan Python files in a specific module:
+pylint leetcode
 ```

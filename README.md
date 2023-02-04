@@ -1,22 +1,27 @@
 # Adventures in Leetcode
+This is a collection of original solutions to algorithms problems from Leetcode and other sources.
 
-## Build
+## Build and test Java solutions
+
+### Full build
 ```
 gradlew build
 ```
 
-## Run Unit Tests
+### Run Unit Tests
 ```
 gradlew test
 ```
 
-## Run Linter
+### Run Linter
 ```
 gradlew check
 ```
 
-This is a collection of original solutions to algorithms problems from Leetcode and other sources.
+## Build and test Python Solutions
+See [src/python/README.md](./src/python/README.md).
 
+## Why?
 For me, practicing algorithms problems is about more than interview prep. I look at them as puzzles, and I solve them for the sake of solving them.  
 
 The solutions I add here will always be my own, written and set in stone before I looked at any other solutions. As such they might not always be optimal—they're the best thing I could come up with.  
