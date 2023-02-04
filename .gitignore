@@ -42,3 +42,40 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+# Python Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python: Byte-compiled/optimized/DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Python test coverage output
+.coverage
