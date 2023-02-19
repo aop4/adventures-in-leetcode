@@ -38,7 +38,7 @@ bash full_build
 # Run unit tests with coverage
 ```bash
 # collect coverage while running tests
-coverage run -m unittest
+coverage run --branch -m unittest
 # report the collected coverage stats
 coverage report
 ```

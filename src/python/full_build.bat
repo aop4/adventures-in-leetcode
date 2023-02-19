@@ -16,8 +16,9 @@ pip install -r requirements.txt || exit /b 1
 echo:
 echo Running tests with coverage...
 echo ====================================================
-coverage run -m unittest discover || exit /b 1
-coverage report
+coverage run --branch -m unittest discover || exit /b 1
+coverage report || exit /b 1
+coverage html || exit /b 1
 
 echo:
 echo Running linter for source code

@@ -12,8 +12,9 @@ pip install -r requirements.txt || exit 1
 
 printf '\nRunning tests with coverage\n'
 printf '====================================================\n'
-coverage run -m unittest discover || exit 1
+coverage run --branch -m unittest discover || exit 1
 coverage report || exit 1
+coverage html || exit 1
 
 printf '\nRunning linter for source code\n'
 printf  '====================================================\n'
