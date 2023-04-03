@@ -29,10 +29,10 @@ class VideoSearcher:
             return []
         if degree < 0:
             raise ValueError('degree cannot be negative')
-        friends_n_degrees_away = self.get_friends_n_degrees_away(friend_graph, user_id, degree)
-        return self.__get_videos_watched_by(friends_n_degrees_away, watched_videos)
+        friends_n_degrees_away = self._get_friends_n_degrees_away(friend_graph, user_id, degree)
+        return self._get_videos_watched_by(friends_n_degrees_away, watched_videos)
 
-    def get_friends_n_degrees_away(self, friend_graph: List[List[int]], user_id: int, degree: int):
+    def _get_friends_n_degrees_away(self, friend_graph: List[List[int]], user_id: int, degree: int):
         """Visible for testing.
         Retrieves a list of users who are separated from the user with id user_id by exactly degree connections.
         For example, if degree is 2, retrieves all friends of friends, excluding the original user and
@@ -40,13 +40,13 @@ class VideoSearcher:
         visited = set([user_id])
         friends_at_degree = [user_id]
         for i in range(degree):
-            friends_at_degree = self.__collect_unvisited_friends(friends_at_degree, friend_graph, visited)
+            friends_at_degree = self._collect_unvisited_friends(friends_at_degree, friend_graph, visited)
             # if no connections at the nth degree, there's no point in checking the n+1th
             if not friends_at_degree:
                 break
         return friends_at_degree
 
-    def __collect_unvisited_friends(self, users: List[int], friend_graph: List[List[int]], visited: Set[int]):
+    def _collect_unvisited_friends(self, users: List[int], friend_graph: List[List[int]], visited: Set[int]):
         """Retrieves all the friends of the users list, who have not been visited thus far."""
         unvisited_friends = []
         for user in users:
@@ -56,7 +56,7 @@ class VideoSearcher:
                     visited.add(friend)
         return unvisited_friends
 
-    def __get_videos_watched_by(self, users: List[int], watched_videos: List[List[str]]):
+    def _get_videos_watched_by(self, users: List[int], watched_videos: List[List[str]]):
         """Retrieves all videos watched by the users list, sorted by frequency (descending) and title (ascending)."""
         videos = Counter()
         for user in users:

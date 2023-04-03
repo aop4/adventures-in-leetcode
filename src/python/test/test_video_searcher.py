@@ -16,7 +16,7 @@ class TestVideoSearcher(unittest.TestCase):
                                                                [[1], [0]], 0, 0)
         self.assertEqual(['I, Robot'], videos)
 
-    @patch.object(VideoSearcher, 'get_friends_n_degrees_away')
+    @patch.object(VideoSearcher, '_get_friends_n_degrees_away')
     def test_videos_watched_by_friends_degree_too_large_for_data(self, mock_method):
         videos = self.video_searcher.videos_watched_by_friends([['I, Robot'], ['Zoolander']],
                                                                [[1], [0]], 0, 2147483647)
