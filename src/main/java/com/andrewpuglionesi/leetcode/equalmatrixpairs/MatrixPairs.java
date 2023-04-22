@@ -4,7 +4,6 @@ import com.andrewpuglionesi.datastructures.Counter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Solution for "Equal Row and Column Pairs." Uses a map to count column lists.
@@ -46,8 +45,8 @@ public class MatrixPairs {
             }
             columnCounts.increment(column);
         }
-        for (final List<Integer> row: matrix) {
-            equalPairs += Optional.ofNullable(columnCounts.get(row)).orElse(0L);
+        for (final List<Integer> row : matrix) {
+            equalPairs += columnCounts.getOrDefault(row, 0L);
         }
         return equalPairs;
     }

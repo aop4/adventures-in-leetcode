@@ -48,6 +48,18 @@ public class CounterTest {
     }
 
     @Test
+    void getOrDefaultKeyExists() {
+        Counter<String> counter = new Counter<>(Collections.singletonList(SPAM));
+        assertEquals(1, counter.getOrDefault(SPAM, -1));
+    }
+
+    @Test
+    void getOrDefaultNonexistentKey() {
+        Counter<String> counter = new Counter<>(Collections.singletonList(SPAM));
+        assertEquals(-1, counter.getOrDefault(EGGS, -1));
+    }
+
+    @Test
     void incrementOneKeyOnce() {
         this.counter.increment(SPAM);
         assertEquals(1, this.counter.size());

@@ -68,6 +68,16 @@ public final class Counter<K> {
     }
 
     /**
+     * Gets the value mapped to {@code key}, or a default value if no mapping exists.
+     * @param key K a potential key in the map.
+     * @param defaultVal a value to return when there is no mapping for the key.
+     * @return the value for the key, or else {@code defaultVal} if it isn't present.
+     */
+    public long getOrDefault(final K key, final long defaultVal) {
+        return this.counterMap.getOrDefault(key, defaultVal);
+    }
+
+    /**
      * @return the number of keys in the map.
      */
     public int size() {
